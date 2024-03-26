@@ -14,6 +14,7 @@
 package io.trino.connector;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import com.google.errorprone.annotations.ThreadSafe;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 import com.google.inject.Inject;
@@ -26,9 +27,7 @@ import io.trino.spi.connector.CatalogHandle;
 import io.trino.spi.connector.ConnectorName;
 import jakarta.annotation.PreDestroy;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -171,13 +170,14 @@ public class WorkerDynamicCatalogManager
             if (stopped) {
                 return;
             }
-            Iterator<Entry<CatalogHandle, Future<CatalogConnector>>> iterator = catalogs.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Entry<CatalogHandle, Future<CatalogConnector>> entry = iterator.next();
-                if (!catalogsInUse.contains(entry.getKey())) {
-                    iterator.remove();
-                    futures.add(entry.getValue());
-                }
+
+            Set<CatalogHandle> catalogsToPrune = Sets.difference(catalogs.keySet(), catalogsInUse);
+            if (catalogsToPrune.isEmpty()) {
+                return;
+            }
+
+            for (CatalogHandle catalogHandleToPrune : catalogsToPrune) {
+                futures.add(catalogs.remove(catalogHandleToPrune));
             }
         }
         finally {
