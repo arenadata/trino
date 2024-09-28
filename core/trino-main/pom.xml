@@ -399,6 +399,12 @@
         </dependency>
 
         <dependency>
+            <groupId>io.arenadata</groupId>
+            <artifactId>trino-catalog-manager</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna-platform</artifactId>
             <scope>runtime</scope>
