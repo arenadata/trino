@@ -16,6 +16,7 @@ package io.trino.connector;
 import com.google.inject.Binder;
 import com.google.inject.Scopes;
 import io.airlift.configuration.AbstractConfigurationAwareModule;
+import io.arenadata.trino.catalog.ArenadataCatalogManagerModule;
 
 import static com.google.inject.multibindings.OptionalBinder.newOptionalBinder;
 
@@ -34,6 +35,7 @@ public class CatalogManagerModule
         switch (config.getCatalogMangerKind()) {
             case STATIC -> install(new StaticCatalogManagerModule());
             case DYNAMIC -> install(new DynamicCatalogManagerModule());
+            case ARENADATA -> install(new ArenadataCatalogManagerModule());
         }
 
         install(new CatalogServiceProviderModule());
